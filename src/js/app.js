@@ -14,6 +14,10 @@ import store from './store';
 
 Vue.component('wa-menu', Menu);
 
+String.prototype.capitalize = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+}
+
 const app = new Vue({
   el: '#app',
   router,

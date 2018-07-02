@@ -10,7 +10,7 @@
                          >New</b-btn>
                      </small>
                 </h1>
-                <b-table hover :items="characters" :fields='fields'>
+                <b-table hover :items="table" :fields='fields'>
                     <template slot="actions" slot-scope="data">
                         <b-btn v-b-modal.viewCharacter
                                @click="getCharacter(data.item.slug)"
@@ -36,80 +36,81 @@
                  @ok="saveCharacter()"
         >
             <h2>{{ title }} Character</h2>
+            
             <div class="row">
-                <div class="col-md-6">
-                    <label>First Name</label>
-                    <b-form-input :state="null" 
-                                  type="text" 
-                                  v-model="character.first_name"
-                    ></b-form-input>
-                </div>
-                <div class="col-md-6">
-                    <label>Last Name</label>
-                    <b-form-input :state="null" 
-                                  type="text" 
-                                  v-model="character.last_name"
-                    ></b-form-input>
-                </div>
+                <template v-for="(item, index) in define">
+                    <div :class="'col-md-' + item.size"
+                         v-if="! item.private && item.type === 'string'"
+                    >
+                        <div class="form-group">
+                            <label>{{ label(index) }}</label>
+                            <b-form-input :state="null"
+                                          type="text" 
+                                          v-model="character[index]"
+                            >
+                            </b-form-input>
+                        </div>
+                    </div>
+                    <div :class="'col-md-' + item.size"
+                         v-if="! item.private && item.type === 'array'"
+                    >
+                        <div class="form-group">
+                            <label>{{ label(index) }}</label>
+                            <b-form-input :state="null"
+                                          type="text" 
+                                          v-model="character[index]"
+                            >
+                            </b-form-input>
+                        </div>
+                    </div>
+                    <div :class="'col-md-' + item.size"
+                         v-if="! item.private && item.type === 'markdown'"
+                    >
+                        <div class="form-group">
+                            <label>{{ label(index) }}</label>
+                            <b-form-textarea :state="null"
+                                          type="text" 
+                                          v-model="character[index]"
+                                          :rows="6"
+                            >
+                            </b-form-textarea>
+                        </div>
+                    </div> 
+                    <template v-if="! item.private && item.type === 'object'" 
+                              v-for="(meta, i) in item.object"
+                    >
+                        <div :class="'col-md-' + meta.size"
+                             v-if="! meta.private && meta.type === 'string'"
+                        >
+                            <div class="form-group">
+                                <label>{{ label(i) }}</label>
+                                <b-form-input :state="null"
+                                              type="text" 
+                                              v-model="character[index][i]"
+                                >
+                                </b-form-input>
+                            </div>
+                        </div>
+                        <div :class="'col-md-' + meta.size"
+                             v-if="! meta.private && meta.type === 'array'"
+                        >
+                            <div class="form-group">
+                                <label>{{ label(i) }}</label>
+                                <b-form-input :state="null"
+                                              type="text" 
+                                              v-model="character[index][i]"
+                                >
+                                </b-form-input>
+                            </div>        
+                        </div>
+                    </template>
+                </template>
             </div>
-            <div class="row">
-                <div class="col-md-3">
-                    <label>Race</label>
-                    <b-form-input :state="null" 
-                                  type="text" 
-                                  v-model="character.race"
-                    ></b-form-input>
-                </div>
-                <div class="col-md-3">
-                    <label>Powers</label>
-                    <b-form-input :state="null" 
-                                  type="text" 
-                                  v-model="character.powers"
-                    ></b-form-input>
-                </div>
-                <div class="col-md-3">
-                    <label>Establishment</label>
-                    <b-form-input :state="null" 
-                                  type="text" 
-                                  v-model="character.establishment"
-                    ></b-form-input>
-                </div>
-                <div class="col-md-3">
-                    <label>Occupation</label>
-                    <b-form-input :state="null" 
-                                  type="text" 
-                                  v-model="character.occupation"
-                    ></b-form-input>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12">
-                    <label>Description</label>
-                    <b-form-textarea v-model=character.description
-                                      :rows="3"
-                    ></b-form-textarea>                                      
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12">
-                    <label>Biography</label>
-                    <b-form-textarea v-model=character.history
-                                      :rows="10"
-                    ></b-form-textarea>                                      
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12">
-                    <label>Notes</label>
-                    <b-form-textarea v-model=character.notes
-                                      :rows="3"
-                    ></b-form-textarea>                                      
-                </div>
-            </div>
+            
         </b-modal>
         
         <b-modal id="viewCharacter" size="lg" :ok-only="true">
-           <wa-character-sheet :character="character"></wa-character-sheet>
+           <wa-character-sheet :character="character" :fields="define"></wa-character-sheet>
         </b-modal>
         
     </div>
@@ -118,6 +119,7 @@
 <script>
     import Vue from 'vue';
     import Character from '../components/CharacterSheet.vue';
+    import moment from 'moment';
     
     Vue.component('wa-character-sheet', Character);
     
@@ -126,24 +128,83 @@
             return {
                 title: 'New',
                 character: {},
-                fields: [
-                    { key: 'first_name', sortable: true },
-                    { key: 'last_name', sortable: true },
-                    { key: 'race', sortable: true },
-                    { key: 'powers', sortable: true },
-                    { key: 'establishment', sortable: true },
-                    { key: 'occupation', sortable: true },
-                    { key: 'actions' }
-                ],
                 characters: [],  
+                row: 0,
+                define: this.$store.getters['characters/define'],
             };
         },
+        computed: {
+            table: function() {
+                let characters = this.characters,
+                    table = [],
+                    define = this.define;
+                    
+                    for(let c in characters) {
+                        let temp = {};
+                        for(let index in define) {
+                            let row = define[index];
+                            
+                            if(row.id) {
+                                temp[index] = characters[c][index];
+                            }
+                            
+                            if(row.list) {
+                                temp[index] = characters[c][index];
+                            }
+                            
+                            if(row.type === 'object') {
+                                for(let i in row.object) {
+                                    let item = row.object[i];
+                                    
+                                    if(item.list) {
+                                        temp[i] = characters[c][index][i];
+                                    }
+                                }
+                            }
+                        }
+                        table.push(temp);
+                    }
+
+                return table;
+            },
+            fields: function(){
+                let fields = [],
+                    define = this.define;
+                
+                    for(let index in define) {
+                        let row = define[index];
+                        
+                        if(row.list) {
+                            fields.push({
+                               key: index, 
+                               sortable: true,
+                            });
+                        }
+                        
+                        if(row.type === 'object') {
+                            for(let i in row.object) {
+                                let item = row.object[i];
+                                
+                                if(item.list) {
+                                    fields.push({
+                                       key: i, 
+                                       sortable: true,
+                                    });
+                                }
+                            }
+                        }
+                    }
+                    fields.push({
+                        key: 'actions'
+                    });
+                
+                return fields;   
+            }
+        },
         methods: {
-            makeSlug: function()
-            {
-                this.character.slug = (this.character.first_name + '-' + this.character.last_name)
-                    .replace(' ','-')
-                    .toLowerCase();
+            label: function(label) {
+                return label.replace('_',' ')
+                    .capitalize();
             },
             getCharacter: function(slug) {
                 let characters = this.characters;
@@ -158,11 +219,10 @@
             newCharacter: function()
             {
                 this.title = 'New';
-                this.character = {};
+                this.character = this.defineCharacter();
             },
             saveCharacter: function() {
                 if(this.character.slug === undefined) {
-                    this.makeSlug();
                     this.$store.commit('characters/addCharacter', { character: this.character });
                 }
                 else {
@@ -174,7 +234,8 @@
                         }
                     }                   
                 }
-                this.character = {};
+                
+                this.character = this.defineCharacter();
             },
              deleteCharacter: function(slug) {
                 let characters = this.characters;
@@ -184,10 +245,33 @@
                         this.characters.splice(index,1);
                         this.$store.commit('characters/deleteCharacter', { character: this.character })
                 }                   
+            },
+            defineCharacter: function() {
+                let define = this.define,
+                    character = {};
+                
+                for(let index in define) {
+                    let item = define[index];
+                    
+                    if(! item.private) {
+                        if(item.type === 'object') {
+                            character[index] = {};
+                            for(let i in item.object) {
+                                character[index][i] = '';
+                                
+                            }
+                        }
+                        else {
+                            character[index] = '';  
+                        }
+                    }
+                }
+                return character;
             }
         },
         created: function() {
             this.characters = this.$store.state.characters.characters;
+            this.character = this.defineCharacter();
         }
     };
 </script>
