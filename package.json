@@ -6,6 +6,7 @@
   "repository": "",
   "author": "Mostafa Eweda <mo.eweda@gmail.com>",
   "dependencies": {
+    "bootstrap": "^4.1.1",
     "bootstrap-vue": "^2.0.0-rc.11",
     "cross-env": "^5.2.0",
     "dropbox": "^4.0.7",

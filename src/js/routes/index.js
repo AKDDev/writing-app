@@ -1,27 +1,23 @@
 import VueRouter from 'vue-router';
-import Character from '../pages/Character.vue';
-import Home from '../pages/Home.vue';
-import WorldLore from '../pages/WorldLore.vue';
-import Projects from '../pages/Projects.vue';
 
-const routes = [
+/* Base Routes */
+import Home from '../pages/Home.vue';
+
+/* Modular routes */
+import character from '../modules/character/routes';
+import lore from '../modules/lore/routes';
+import projects from '../modules/projects/routes'
+
+let baseRoutes = [
     {
         path: '/',
         component: Home,
     },
-    {
-        path: '/characters',
-        component: Character,
-    },
-    {
-        path: '/world-lore',
-        component: WorldLore,
-    },
-    {
-        path: '/projects',
-        component: Projects,
-    },
 ];
+
+const routes = baseRoutes.concat(character)
+        .concat(lore)
+        .concat(projects);
 
 export default new VueRouter({
   routes // short for `routes: routes`

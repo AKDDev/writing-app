@@ -3,9 +3,9 @@ import Vuex from 'vuex';
 
 import createPersistedState from "vuex-persistedstate";
 
-import { characters } from './characters.js';
-import { lore } from './lore.js';
-import { projects } from './projects.js'; 
+import { characters } from '../modules/character/store';
+import { lore } from '../modules/lore/store';
+import { projects } from '../modules/projects/store'; 
 
 Vue.use(Vuex);
 

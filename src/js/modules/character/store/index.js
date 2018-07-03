@@ -178,7 +178,7 @@ export const characters = {
                     size: 12,
                     element: 'p',
                 },
-                create_at: {
+                created_at: {
                     type: 'timestamp',
                     list: false,
                     private: true,
@@ -215,7 +215,7 @@ export const characters = {
         },
         deleteCharacter: function(state, { character }) {
             let characters = state.characters;
-            
+            console.log()
             for(let index in characters) {
                 if(characters[index].slug === character.slug) {
                     state.characters.splice(index, 1);
