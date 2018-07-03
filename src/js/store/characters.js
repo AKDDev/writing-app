@@ -35,7 +35,7 @@ export const characters = {
                     list: true,
                     private: false,
                     size: 6,
-                    element: 'h2',
+                    element: 'h1',
                     
                 },
                 last_name: {
@@ -43,7 +43,7 @@ export const characters = {
                     list: true,
                     private: false,
                     size: 6,
-                    element: 'h2',
+                    element: 'h1',
                 },
                 meta: {
                     type: 'object',
